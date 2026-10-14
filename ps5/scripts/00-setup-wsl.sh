@@ -109,6 +109,7 @@ if [ ! -d "$WORK/ps5-opengl" ]; then
   git -C "$WORK/ps5-opengl" checkout -q "$PS5_OPENGL_COMMIT"
 fi
 if [ ! -f "$PS5_OPENGL_PREFIX/lib/cmake/PS5OpenGL/PS5OpenGLConfig.cmake" ]; then
+  python3 "$(dirname "${BASH_SOURCE[0]}")/../patches/ps5-opengl/kodi-additions.py" "$WORK/ps5-opengl"
   # "Library-only workflow": PS5_PAYLOAD_SDK is exported above, so the compiler
   # and Mesa are built against OUR sysroot, i.e. the one Kodi links against.
   # If Mesa refuses to build against it, retry with the SDK the project was
