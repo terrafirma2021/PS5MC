@@ -72,6 +72,7 @@ struct VideoOutOutputStatus
 int32_t sceVideoOutGetOutputStatus(int32_t handle, VideoOutOutputStatus* status);
 // patches/ps5-opengl/kodi-additions.py (HDR part); weak: absent in older drivers
 int ps5_opengl_set_scanout_format(uint64_t pixel_format, int32_t results[4]) __attribute__((weak));
+int ps5_opengl_extensions_stubbed(void) __attribute__((weak));
 }
 
 
@@ -193,7 +194,7 @@ int KODI::PLATFORM::PS5::SetScanoutFormat(uint64_t format, int32_t results[4])
 
 bool KODI::PLATFORM::PS5::ScanoutFormatSwitchAvailable()
 {
-  return ps5_opengl_set_scanout_format != nullptr;
+  return ps5_opengl_extensions_stubbed == nullptr && ps5_opengl_set_scanout_format != nullptr;
 }
 
 bool KODI::PLATFORM::PS5::IsDisplayHdr()

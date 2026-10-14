@@ -16,6 +16,7 @@ void* ps5_opengl_memory_image_create(void* data, unsigned width, unsigned height
                                      unsigned stride, unsigned components,
                                      unsigned bytes_per_component) __attribute__((weak));
 void ps5_opengl_memory_image_destroy(void* image) __attribute__((weak));
+int ps5_opengl_extensions_stubbed(void) __attribute__((weak));
 }
 
 namespace KODI::PLATFORM::PS5
@@ -23,7 +24,8 @@ namespace KODI::PLATFORM::PS5
 
 bool IsZeroCopyAvailable()
 {
-  return ps5_opengl_memory_image_create != nullptr && ps5_opengl_memory_image_destroy != nullptr;
+  return ps5_opengl_extensions_stubbed == nullptr && ps5_opengl_memory_image_create != nullptr &&
+         ps5_opengl_memory_image_destroy != nullptr;
 }
 
 void* CreateMemoryImage(const void* data, unsigned width, unsigned height, unsigned stride,

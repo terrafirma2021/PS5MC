@@ -127,6 +127,8 @@ void _ZTHN9XBMCAddon7xbmcgui15InterceptorBase9upcallTlsE(void)
 
 
 /* Optional PS5 OpenGL extensions absent from this driver build. */
+int ps5_opengl_extensions_stubbed(void) { return 1; }
+
 void* ps5_opengl_memory_image_create(void* data, unsigned width, unsigned height,
                                      unsigned stride, unsigned components,
                                      unsigned bytes_per_component)
