@@ -1048,6 +1048,13 @@
 							<visible>System.GetBool(gamesgeneral.enable) + !Skin.HasSetting(HomeMenuNoGamesButton)</visible>
 						</item>
 						<item>
+							<label>Overdrive</label>
+							<onclick>ActivateWindow(Overdrive)</onclick>
+							<property name="menu_id">$NUMBER[17500]</property>
+							<thumb>icons/sidemenu/games.png</thumb>
+							<property name="id">overdrive</property>
+						</item>
+						<item>
 							<label>$LOCALIZE[24001]</label>
 							<property name="menu_id">$NUMBER[8000]</property>
 							<onclick>ActivateWindow(1100)</onclick>

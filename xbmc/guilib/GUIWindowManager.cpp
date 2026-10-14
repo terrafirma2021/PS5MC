@@ -33,6 +33,7 @@
 #include "music/windows/GUIWindowMusicPlaylist.h"
 #include "music/windows/GUIWindowMusicPlaylistEditor.h"
 #include "music/windows/GUIWindowVisualisation.h"
+#include "overdrive/GUIWindowOverdrive.h"
 #include "pictures/GUIWindowPictures.h"
 #include "pictures/GUIWindowSlideShow.h"
 #include "profiles/windows/GUIWindowSettingsProfile.h"
@@ -220,6 +221,7 @@ void CGUIWindowManager::CreateWindows()
 {
   Add(new CGUIWindowHome);
   Add(new CGUIWindowPrograms);
+  Add(new CGUIWindowOverdrive);
   Add(new CGUIWindowPictures);
   Add(new CGUIWindowFileManager);
   Add(new CGUIWindowSettings);
@@ -484,6 +486,7 @@ bool CGUIWindowManager::DestroyWindows()
 
     DestroyWindow(WINDOW_HOME);
     DestroyWindow(WINDOW_PROGRAMS);
+    DestroyWindow(WINDOW_OVERDRIVE);
     DestroyWindow(WINDOW_PICTURES);
     DestroyWindow(WINDOW_WEATHER);
     DestroyWindow(WINDOW_DIALOG_GAME_CONTROLLERS);

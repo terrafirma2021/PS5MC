@@ -24,6 +24,7 @@ xbmc/messaging                                  messaging
 xbmc/messaging/helpers                          messagingHelpers
 xbmc/pictures                                   pictures
 xbmc/pictures/metadata                          pictures_metadata
+xbmc/overdrive                                  overdrive
 xbmc/platform                                   platform
 xbmc/playlists                                  playlists
 xbmc/powermanagement                            powermanagement

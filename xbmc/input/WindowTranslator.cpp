@@ -26,6 +26,7 @@
 const CWindowTranslator::WindowMapByName CWindowTranslator::WindowMappingByName = {
     {"home", WINDOW_HOME},
     {"programs", WINDOW_PROGRAMS},
+    {"overdrive", WINDOW_OVERDRIVE},
     {"pictures", WINDOW_PICTURES},
     {"filemanager", WINDOW_FILES},
     {"settings", WINDOW_SETTINGS_MENU},

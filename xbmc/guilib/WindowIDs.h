@@ -43,6 +43,7 @@
 #define WINDOW_ADDON_BROWSER              10040
 
 #define WINDOW_EVENT_LOG                  10050
+#define WINDOW_OVERDRIVE                  10051
 
 #define WINDOW_FAVOURITES 10060
 
