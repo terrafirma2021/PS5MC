@@ -124,3 +124,25 @@ char* __dlerror(void)
 void _ZTHN9XBMCAddon7xbmcgui15InterceptorBase9upcallTlsE(void)
 {
 }
+
+
+/* Optional PS5 OpenGL extensions absent from this driver build. */
+void* ps5_opengl_memory_image_create(void* data, unsigned width, unsigned height,
+                                     unsigned stride, unsigned components,
+                                     unsigned bytes_per_component)
+{
+  (void)data; (void)width; (void)height; (void)stride;
+  (void)components; (void)bytes_per_component;
+  return NULL;
+}
+
+void ps5_opengl_memory_image_destroy(void* image)
+{
+  (void)image;
+}
+
+int ps5_opengl_set_scanout_format(unsigned long long pixel_format, int results[4])
+{
+  (void)pixel_format; (void)results;
+  return -1;
+}
