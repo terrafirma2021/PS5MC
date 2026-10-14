@@ -4,8 +4,8 @@
 # disabled: Kodi only needs the libraries). Built and installed with makepkg /
 # pacman by scripts/16-build-ffmpeg.sh so it upgrades the pacbrew package.
 pkgname=ps5-payload-ffmpeg
-pkgver=7.1.1
-pkgrel=3
+pkgver=7.1.5
+pkgrel=1
 pkgdesc='Complete solution to record, convert and stream audio and video'
 arch=('any')
 url='https://ffmpeg.org'
