@@ -23,9 +23,22 @@ deploy_to_console() {
   while IFS= read -r f; do
     local rel="${f#$DIST/}"
     local want; want=$(stat -c%s "$f")
-    local got; got=$(curl -s -I "ftp://$HOST:$PORT$REMOTE/$rel" 2>/dev/null | awk '/Content-Length|^Content-Length/{print $2}' | tr -d '\r')
+    local url="ftp://$HOST:$PORT$REMOTE/${rel// /%20}"
+    local got; got=$(curl -s -I "$url" 2>/dev/null | awk '/Content-Length|^Content-Length/{print $2}' | tr -d '\r')
     # curl -I over FTP may not give size; fall back to a sized download probe
-    [ -z "$got" ] && got=$(curl -s "ftp://$HOST:$PORT$REMOTE/$rel" 2>/dev/null | wc -c)
+    [ -z "$got" ] && got=$(curl -s "$url" 2>/dev/null | wc -c)
+    if [ "$got" != "$want" ] && { [ "$rel" = eboot.bin ] || [[ "$rel" = *.prx ]]; }; then
+      # Some FTP servers expose the extracted ELF for signed SELF modules.
+      local native_tool="$DIST/../../build/host/ps5-native-tool"
+      if [ -x "$native_tool" ]; then
+        local extracted; extracted=$(mktemp)
+        if "$native_tool" self --extract --file "$f" --out "$extracted" >/dev/null 2>&1; then
+          local elf_size; elf_size=$(stat -c%s "$extracted")
+          [ "$got" = "$elf_size" ] && want="$elf_size"
+        fi
+        rm -f "$extracted"
+      fi
+    fi
     n=$((n+1))
     if [ "$got" != "$want" ]; then
       echo "   !! $rel: console has ${got:-0} bytes, build has $want"
