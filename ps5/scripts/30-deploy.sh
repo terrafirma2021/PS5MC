@@ -111,40 +111,23 @@ VO_MISSING="$(comm -23 <("$VO_NM" -D --defined-only "$STUBDIR/libSceVideoOut.so"
                        <("$VO_NM" -D --defined-only "$VO_EXT" | awk '{print $3}' | sort))"
 [ -z "$VO_MISSING" ] || { echo "!! extended libSceVideoOut stub lacks: $VO_MISSING"; exit 1; }
 cp "$VO_EXT" "$STUBDIR/libSceVideoOut.so"
-# app-owned malloc heap: the demo's 128 MiB is far too small for Kodi
-sed -i "s/#define PS5_OPENGL_HEAP_SIZE (128u \* 1024u \* 1024u)/#define PS5_OPENGL_HEAP_SIZE (${HEAP_MIB}ull * 1024ull * 1024ull)/" "$APP/src/app_heap.c"
-grep -q "PS5_OPENGL_HEAP_SIZE (${HEAP_MIB}ull" "$APP/src/app_heap.c" || { echo "!! could not raise the heap size in app_heap.c"; exit 1; }
-# ...and back it with direct memory: mmap() draws from the title's small
-# flexible-memory budget (448 MiB), so a Kodi-sized heap cannot be mmap'ed.
-cp "$HERE/shims/native-app/heap_dmem.c" "$APP/src/"
-python3 - "$APP/src/app_heap.c" <<'PY'
+# The template reserves a larger app-owned heap from direct memory.
+python3 - "$APP/src/app_heap.c" "$HEAP_MIB" <<'PY_HEAP'
 import sys
-p = sys.argv[1]; s = open(p).read()
-mmap_call = """mmap(NULL, PS5_OPENGL_HEAP_SIZE, PROT_READ | PROT_WRITE,
-                    MAP_PRIVATE | MAP_ANON, -1, 0);"""
-if mmap_call not in s or "munmap(base, PS5_OPENGL_HEAP_SIZE);" not in s:
-    sys.exit("app_heap.c: unexpected heap setup code")
-s = s.replace(mmap_call, "ps5_heap_map(PS5_OPENGL_HEAP_SIZE);")
-s = s.replace("munmap(base, PS5_OPENGL_HEAP_SIZE);", "ps5_heap_unmap(base, PS5_OPENGL_HEAP_SIZE);")
-s = s.replace("#define PS5_OPENGL_HEAP_SIZE", "void *ps5_heap_map(size_t size);\nint ps5_heap_unmap(void *address, size_t size);\n#define PS5_OPENGL_HEAP_SIZE", 1)
-s = s.replace('size=%u\\n",', 'size=%llu\\n",')
-# Expose the heap's own live-byte counter, so Kodi's system-info memory figure
-# reports how full Kodi's heap really is (MemUtils.cpp; weak 0 fallbacks there).
-if "ps5_heap_live_bytes" not in s:
-    sys.exit("app_heap.c: no live-byte counter to expose")
-s += """
-/* Heap counters for Kodi's MemUtils (system-info memory figure). Exposed as
- * plain strong symbols that MemUtils looks up lazily with dlsym at first use -
- * NOT via a constructor (a constructor ran during C++ static init, before the
- * runtime was ready, and faulted: SIGSEGV in ios_base::Init). These names are
- * unique to the eboot; kodi.bin provides weak fallbacks. */
+p, mib = sys.argv[1], int(sys.argv[2])
+s = open(p).read()
+old = 'const size_t ps5_opengl_heap_size = 128u * 1024u * 1024u;'
+if old not in s or 'static atomic_size_t ps5_heap_live_bytes' not in s:
+    sys.exit('app_heap.c: unexpected heap implementation')
+s = s.replace(old, f'const size_t ps5_opengl_heap_size = {mib}ull * 1024ull * 1024ull;', 1)
+s += '''
 size_t ps5_heap_live_bytes_value(void) {
   return atomic_load_explicit(&ps5_heap_live_bytes, memory_order_relaxed);
 }
 size_t ps5_heap_capacity_value(void) { return PS5_OPENGL_HEAP_SIZE; }
-"""
-open(p, "w").write(s)
-PY
+'''
+open(p, 'w').write(s)
+PY_HEAP
 grep -q -- "--wrap=malloc" "$APP/tools/build.sh" || { echo "!! template build.sh has no malloc wraps"; exit 1; }
 
 echo "==> 3. Kodi link inputs"
