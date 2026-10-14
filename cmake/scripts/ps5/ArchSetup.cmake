@@ -103,7 +103,7 @@ endif()
 # the console libc's Unicode-only iconv at run time. -liconv is added by the
 # Iconv::Iconv target Kodi links; it need not be repeated here.
 set(SYSTEM_LDFLAGS -lSceAudioOut -lScePad -lSceUserService -lSceImeDialog -lSceRegMgr -lSceNetCtl -lSceSysmodule
-                   -lSceVideodec2 -lprocstat -lsmb2)
+                   -lSceVideodec2 -lprocstat -luuid -lsmb2)
 
 # A static libpython needs the libraries its built-in modules use (Kodi's
 # FindPython adds them only for its own depends builds); each one that the
