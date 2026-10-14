@@ -555,8 +555,9 @@ bool CExternalPlayer::Initialize(TiXmlElement* pConfig)
   }
   else
   {
-    std::string xml;
-    xml<<*pConfig;
+    TiXmlPrinter printer;
+    pConfig->Accept(&printer);
+    std::string xml = printer.CStr();
     CLog::Log(LOGERROR, "ExternalPlayer Error: filename element missing from: {}", xml);
     return false;
   }
