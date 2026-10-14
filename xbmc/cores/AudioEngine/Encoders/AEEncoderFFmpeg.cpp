@@ -127,8 +127,17 @@ bool CAEEncoderFFmpeg::Initialize(AEAudioFormat& format, bool allow_planar_input
   {
     const AVChannelLayout* channelLayouts = nullptr;
     int numLayouts = 0;
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(61, 12, 100)
     avcodec_get_supported_config(m_CodecCtx, codec, AV_CODEC_CONFIG_CHANNEL_LAYOUT, 0,
                                  reinterpret_cast<const void**>(&channelLayouts), &numLayouts);
+#else
+    channelLayouts = codec->ch_layouts;
+    if (channelLayouts != nullptr)
+    {
+      while (channelLayouts[numLayouts].nb_channels != 0)
+        ++numLayouts;
+    }
+#endif
 
     std::vector<CAEChannelInfo> layouts;
     layouts.reserve(numLayouts);
